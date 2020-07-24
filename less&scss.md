@@ -131,3 +131,16 @@ body {
 }
 ```
 
+
+# css
+
+## 单行省略
+
+```
+div{
+	overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+```
+

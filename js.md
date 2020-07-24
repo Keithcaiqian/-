@@ -56,3 +56,33 @@ function throttle(fun,time){
 }
 ```
 
+# 正则
+
++ 应用例子
+
+    ```
+    this.value = this.value.replace(/[^\d.]/g,""); //清除"数字"和"."以外的字符
+    this.value = this.value.replace(/^\./g,""); //验证第一个字符是数字而不是
+    this.value = this.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+    this.value = this.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+    this.value = this.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+    ```
+
+    
+
+# switch
+
+```
+switch(type){
+     case "1":
+        ......
+        break；
+     case "2":
+        ......
+        break；
+     default:
+        .....
+        break;
+}                   
+```
+
