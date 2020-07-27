@@ -86,3 +86,11 @@ switch(type){
 }                   
 ```
 
+# sort 数组排序
+
+```
+arr.sort((a,b)=>{
+	return a-b; //升序，同理b-a为降序
+})
+```
+

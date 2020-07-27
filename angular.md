@@ -661,4 +661,203 @@ imports: [
     }
     ```
 
-    
+
+# 路由
+
++ 创建组件
+
+```
+ng g component components/news
+```
+
+创建成功后会自动在app.module.ts中生成配置
+
+```
+import { NewsComponent } from './components/news/news.component';
+declarations: [
+   NewsComponent,
+ ],
+```
+
++ app-routing.module.ts中配置路由
+
+```
+import { NewsComponent } from './components/news/news.component';//从app.module.ts复制
+const routes: Routes = [
+  {path:'news',component:NewsComponent},
+];
+```
+
++ app.component.html中
+
+```
+<h1>
+    <a [routerLink]="['/person']">首页</a>
+    <a [routerLink]="['/news']">新闻页</a>
+    <a routerLink="/product">产品页 </a>
+</h1>
+<router-outlet></router-outlet>
+```
+
+## 默认路由
+
+```
+//匹配不到的时候默认跳转到的路由
+  {
+    path:'**',
+    redirectTo:'person'
+  }
+```
+
+## 选中样式
+
+```
+<h1>
+    <a [routerLink]="['/person']" routerLinkActive="red">首页</a>
+    <a [routerLink]="['/news']" routerLinkActive="green">新闻页</a>
+    <a routerLink="/product" routerLinkActive="blue">产品页 </a>
+</h1>
+
+<router-outlet></router-outlet>
+```
+
+```
+h1{
+    height: 44px;
+    line-height: 44px;
+    background-color: #000;
+    a{
+        color: #fff;
+        margin: 0 20px;
+    }
+    .red{
+        color: red;
+    }
+    .blue{
+        color: blue;
+    }
+    .green{
+        color: green;
+    }
+}
+```
+
+## 路由get传值
+
++ 跳转路由
+
+```
+//html
+<ul>
+    <li *ngFor="let item of list,let key=index;">
+        <a [routerLink]="['/newscontent']" [queryParams]='{aid:key}'>{{key}}---{{item}}			</a>
+    </li>
+</ul>
+
+//ts
+export class NewsComponent implements OnInit {
+  list:any = []
+  constructor() { }
+
+  ngOnInit(): void {
+    for(let i=0;i<5;i++){
+      this.list.push(`这是第${i}条新闻`)
+    }
+  }
+}
+```
+
++ 接收路由
+
+```
+//ts
+import {ActivatedRoute} from '@angular/router';
+constructor(public route:ActivatedRoute) { }
+ngOnInit(): void {
+    console.log(this.route.queryParams);
+    // 必须用这种方式才能获取到get路由的传值
+    this.route.queryParams.subscribe(res=>{
+      console.log(res);
+    })
+}
+```
+
+## 动态路由
+
++ 配置路由
+
+```
+{
+    path:'newscontent/:aid',
+    component:NewscontentComponent
+  },
+```
+
++ 跳转路由
+
+```
+<ul>
+    <li *ngFor="let item of list,let key=index;">
+        <a [routerLink]="['/newscontent',key]">{{key}}---{{item}}</a>
+    </li>
+</ul>
+```
+
++ 接收路由
+
+```
+import {ActivatedRoute} from '@angular/router';
+constructor(public route:ActivatedRoute) { }
+ngOnInit(): void {
+    // 必须用这种方式才能获取到动态路由的传值
+    this.route.params.subscribe(res=>{
+      console.log(res);
+    })
+}
+```
+
+## 动态路由的js跳转
+
++ 跳转路由
+
+```
+//html
+<button (click)='navTo()'>js跳转到产品详情页</button>
+<button (click)='navToHome()'>js跳转到首页</button>
+//ts
+import {Router} from '@angular/router'
+constructor(public router:Router) { }
+navTo(){
+    //适合普通路由、动态路由
+    this.router.navigate(['/productcontent/','abc'])
+}
+navToHome(){
+    this.router.navigate(['/person'])
+}
+```
+
+## 路由get传值js跳转
+
++ 跳转路由
+
+```
+//html
+<button (click)='goNews()'>跳转到新闻页</button>
+//ts
+import {Router,NavigationExtras} from '@angular/router'
+constructor(public router:Router) { }
+goNews(){
+    //跳转路由并进行get传值
+    let queryParams:NavigationExtras = {
+      queryParams:{'aid':123}
+    }
+    //注意queryParams放置在外面
+    this.router.navigate(['/news'],queryParams);
+    // this.router.navigate(['/news'],{
+    //   queryParams:{
+    //     'aid':123
+    //   }
+    // });
+}
+```
+
