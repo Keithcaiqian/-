@@ -702,7 +702,7 @@ const routes: Routes = [
 ## 默认路由
 
 ```
-//匹配不到的时候默认跳转到的路由
+//匹配不到的时候默认跳转到的路由，放在规则的最下边，上面的都匹配不到，走这个规则
   {
     path:'**',
     redirectTo:'person'
@@ -860,4 +860,219 @@ goNews(){
     // });
 }
 ```
+
+## 父子路由
+
++ 创建
+
+```
+ng g component components/person/first
+ng g component components/person/second
+```
+
++ 目录结构
+
+![image-20200728151732349](C:\Users\k\AppData\Roaming\Typora\typora-user-images\image-20200728151732349.png)
+
+
+
++ 路由配置
+
+```
+ {
+    path:'person',
+    component:PersonComponent,
+    children:[
+      {
+        path:'first',
+        component:FirstComponent
+      },
+      {
+        path:'second',
+        component:SecondComponent
+      },
+      //默认选中
+      {
+        path:'**',
+        redirectTo:'first'
+      }
+    ]
+  },
+```
+
++ 父级页面
+
+```
+//html
+<div class="container">
+    <div class="left">
+        <a [routerLink]="['/person/first']" routerLinkActive="router-link-active" >第一页</a>
+
+        <br>
+        <br>
+        <a [routerLink]="['/person/second']" routerLinkActive="router-link-active" >第二页</a>
+    </div>
+    <div class="right">
+        <router-outlet></router-outlet>
+    </div>
+</div>
+//scss
+.container{
+    width: 100%;
+    height: 500px;
+    display: flex;
+    .left{
+        width: 200px;
+        border-right: 1px solid #000;
+    }
+    .right{
+        flex: 1;
+    }
+}
+```
+
++ 页面效果
+
+![image-20200728153144487](C:\Users\k\AppData\Roaming\Typora\typora-user-images\image-20200728153144487.png)
+
+
+
+# 自定义模块
+
++ 项目大的用自定义模块，小项目不建议用
+
++ 创建模块
+
+```
+ng g module module/user    //在module文件下创建模块user
+```
+
++ 在自定义的模块下创建组件
+
+```
+ng g component module/user/components/address 
+ng g component module/user/components/product
+ng g component module/user
+```
+
++ 目录结构（在user组件下挂载子组件）
+
+![image-20200728155120084](C:\Users\k\AppData\Roaming\Typora\typora-user-images\image-20200728155120084.png)
+
++ 创建服务
+
+```
+ng g service module/user/services/common
+```
+
+## 在app中使用自定义模块
+
++ 自定义模块暴露出组件才可以被外部使用，user.module.ts
+
+```
+@NgModule({
+  declarations: [AddressComponent, ProductComponent, UserComponent],
+  exports:[UserComponent],//暴露user组件
+  imports: [
+    CommonModule
+  ]
+})
+```
+
++ 自定义模块页面
+
+```
+//user根组件html
+<p>user模块</p>
+<app-address></app-address>
+
+//user子组件html
+<p>我是user模块的子组件</p>
+```
+
++ 引入自定义模块，app.module.ts
+
+```
+import { UserModule } from './module/user/user.module' //引入user模块
+imports: [
+   UserModule
+],
+```
+
++ app的html
+
+```
+<h1>
+    <a [routerLink]="['/person']" routerLinkActive="red">首页</a>
+    <a [routerLink]="['/news']" routerLinkActive="green">新闻页</a>
+    <a routerLink="/product" routerLinkActive="blue">产品页 </a>
+</h1>
+<app-user></app-user>    
+
+<router-outlet></router-outlet>
+```
+
++ 效果
+
+![image-20200728160706064](C:\Users\k\AppData\Roaming\Typora\typora-user-images\image-20200728160706064.png)
+
+## 自定义模块配置路由实现懒加载
+
++ 创建带路由的模块
+
+```
+ng g module module/user --routing
+```
+
++ 创建根组件
+
+```
+ng g component module/user 
+//创建子组件
+ng g component module/user/poo
+```
+
++ 自定义模块配置路由，user-routing.module.ts
+
+```
+import { PooComponent } from './poo/poo.component';
+const routes: Routes = [
+  {
+    path:'',
+    component:UserComponent
+    //也可以配置在这里配置子路由
+  },
+  {
+    path:'poo',
+    component:PooComponent
+  }
+];
+```
+
++ app中配置路由，app-routing.module.ts
+
+```
+const routes: Routes = [
+  {
+    path:'user',
+    loadChildren:() => import('./module/user/user.module').then(m => m.UserModule)
+  },
+]
+```
+
++ app页面
+
+```
+<h1>
+    <a [routerLink]="['/user']" routerLinkActive="red">用户</a>
+    <a [routerLink]="['/person']" routerLinkActive="red">首页</a>
+    <a [routerLink]="['/news']" routerLinkActive="green">新闻页</a>
+    <a routerLink="/product" routerLinkActive="blue">产品页 </a>
+</h1>
+<router-outlet></router-outlet>
+```
+
++ 效果
+    + ![image-20200728165530804](C:\Users\k\AppData\Roaming\Typora\typora-user-images\image-20200728165530804.png)
+    + ![image-20200728165551892](C:\Users\k\AppData\Roaming\Typora\typora-user-images\image-20200728165551892.png)
 
