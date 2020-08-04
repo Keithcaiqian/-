@@ -94,3 +94,29 @@ arr.sort((a,b)=>{
 })
 ```
 
+# FileReader
+
++ 上传图片并获取图片的url
+
+```
+//上传图片的input
+$('#appleWalletModal').on('input','.bigIconInp',function (e) {
+    var files = e.target.files[0];
+    getImgUrl(files,(res)=>{
+    	$(img).attr('src',res)
+    })
+})
+function getImgUrl(file,fun){
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadstart = function (ev) {
+        console.log('图片正在上传中');
+    }
+    reader.onload = function (ev) {
+       if(fun){
+       	 fun(reader.result)
+       }
+    }
+}
+```
+
